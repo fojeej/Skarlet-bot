@@ -1,59 +1,70 @@
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, update, ParseMode
+from aiogram import Bot, types, executor, Dispatcher
+import random
 import logging
-from telegram.ext import Application, MessageHandler, filters
-from telegram.ext import CommandHandler
 
-BOT_TOKEN = '6123445190:AAGBRXl6ELUe5tLCAPnUdSCv_8rq7ROrrAQ'
+token = "5968960828:AAG-VrkD8ERmtcT5VYG5DbbJsUasuqcY1Mw"
 
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG
-)
-
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+button1 = InlineKeyboardButton(text="A1-beginner", callback_data="a1")
+button2 = InlineKeyboardButton(text="A2-elementary", callback_data="a2")
+button3 = InlineKeyboardButton(text="B1-intermediate", callback_data="b1")
+button4 = InlineKeyboardButton(text="B2-upper intermediate", callback_data="b2")
+button5 = InlineKeyboardButton(text="C1-аdvanced", callback_data="c1")
+button6 = InlineKeyboardButton(text="C2-proficiency", callback_data="c2")
+button7 = InlineKeyboardButton(text="Я не знаю", callback_data="dontknow")
+button_l1 = InlineKeyboardButton(text="Учить английский", callback_data="learn_a1")
+button_p1 = InlineKeyboardButton(text="Практиковать английский", callback_data="practice_a1")
+button_word1 = InlineKeyboardButton(text="Учить слова", callback_data="learn_wda1")
+button_txt1 = InlineKeyboardButton(text="Учить правила", callback_data="learn_atxt1")
+button_color1 = InlineKeyboardButton(text="Цвета", callback_data="color_a1")
+button_food1 = InlineKeyboardButton(text="Еда", callback_data="food_a1")
+button_animals1 = InlineKeyboardButton(text="Животные", callback_data="animals_a1")
+button_sport1 = InlineKeyboardButton(text="Спорт", callback_data="sport_a1")
+keyboard_inline = InlineKeyboardMarkup().add(button1, button2, button3, button4, button5, button6, button7)
+keyboard_inlinea1 = InlineKeyboardMarkup().add(button_l1, button_p1)
+keyboard_inlineaa1 = InlineKeyboardMarkup().add(button_word1, button_txt1)
+keyboard_inlineworda1 = InlineKeyboardMarkup().add(button_color1, button_food1, button_animals1, button_sport1)
 
-# Определяем функцию-обработчик сообщений.
-# У неё два параметра, updater, принявший сообщение и контекст - дополнительная информация о сообщении.
-async def echo(update, context):
-    # У объекта класса Updater есть поле message,
-    # являющееся объектом сообщения.
-    # У message есть поле text, содержащее текст полученного сообщения,
-    # а также метод reply_text(str),
-    # отсылающий ответ пользователю, от которого получено сообщение.
-    await update.message.reply_text(f'Я получил сообщение {update.message.text}')
+colors_a1_list = ['beige - бежевый', 'white - белый', 'yellow - жёлтый', 'green - зелёный', 'brown - коричневый',
+                  'red - красный', 'purple - фиолетовый', 'pink - розовый', 'blue - голубой', 'black - чёрный']
+
+food_a1_list = ['egg - яйцо', 'pizza - пицца', 'milk - молоко', 'salad - салат', 'fish - рыба',
+                'chicken - курица', 'pasta - паста', 'rice - рис', 'meet - мясо', 'apple - яблоко']
+
+animals_a1_list = ['fox - лиса', 'dog - собака', 'cat - кошка', 'fish - рыба', 'rabbit - заяц',
+                   'wolf - волк', 'bear - медведь', 'horse - лошадь', 'lion - лев', 'panda - панда']
+
+sport_a1_list = ['football - футбол', 'hockey - хоккей', 'tennis - теннис', 'basketball - баскетбол', 'golf - гольф',
+                 'volleyball - волейбол', 'badminton - бадминтон']
+
+joke_list = ["\n*Take my advice, I don’t use it anyway:* _Прими мой совет, я все равно им не пользуюсь._",
+             "\n*As I said before, I never repeat myself:* _Как я говорил раньше, я никогда не повторяюсь._",
+             "\n*I have so much to do that I’m going to bed:* _У меня столько дел, поэтому я пойду спать._",
+             "\n*Kolobok hanged himself:* _Колобок повесился._",
+             "\n*Buratino drowned:* _Буратино утонул._"]
+
+quotes_list = ["Now or never!\n*Перевод:* _Сейчас или никогда!_",
+               "Temporary happiness is like waiting for a knife.\n*Перевод:* _Временное счастье — это как"
+               " ждать удара ножом._",
+               "Everyone has one’s own path.\n*Перевод:* _У каждого своя дорога._",
+               "Life is a series of choices!\n*Перевод:* _Жизнь — это череда выборов._",
+               "In the middle of difficulty lies opportunity!\n*Перевод:* _В центре трудности лежит возможность._",
+               "Beauty is in the eye of the beholder!\n*Перевод:* _Красота в глазах смотрящего._"]
+
+bot = Bot(token=token)
+dp = Dispatcher(bot)
 
 
-def main():
-    # Создаём объект Application.
-    # Вместо слова "TOKEN" надо разместить полученный от @BotFather токен
-    application = Application.builder().token(BOT_TOKEN).build()
-
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
-
-    # Создаём обработчик сообщений типа filters.TEXT
-    # из описанной выше асинхронной функции echo()
-    # После регистрации обработчика в приложении
-    # эта асинхронная функция будет вызываться при получении сообщения
-    # с типом "текст", т. е. текстовых сообщений.
-    text_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
-
-    # Регистрируем обработчик в приложении.
-    application.add_handler(text_handler)
-
-    # Запускаем приложение.
-    application.run_polling()
+@dp.message_handler(commands=["help"])
+async def start(message: types.Message):
+    await message.answer(f"*Список команд:*\n/start - Начать\n/quotes - Цитаты\n/jokes - Шутки", parse_mode="Markdown")
 
 
-async def start(update, context):
-    user = update.effective_user
-    await update.message.reply_html(
-        rf"Привет {user.mention_html()}! Я Skarlet-бот для изучения и практики английского языка!",
-    )
-
-
-async def help_command(update, context):
-    await update.message.reply_text("Я пока не умею помогать... Я только ваше эхо.")
-
-
-if __name__ == '__main__':
-    main()
+@dp.message_handler(commands=["start"])
+async def start(message: types.Message):
+    await message.reply(f"Я Скарлет - бот по изучению английского языка. Для дальнейшего пользования, "
+                        "выбери свой уровень знания языка.", reply_markup=keyboard_inline)
