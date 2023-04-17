@@ -68,3 +68,80 @@ async def start(message: types.Message):
 async def start(message: types.Message):
     await message.reply(f"Я Скарлет - бот по изучению английского языка. Для дальнейшего пользования, "
                         "выбери свой уровень знания языка.", reply_markup=keyboard_inline)
+                        
+                      
+@dp.message_handler(commands=["quotes"])
+async def quotes(message: types.Message):
+    await message.reply(random.choice(quotes_list), parse_mode="Markdown")
+
+
+@dp.message_handler(commands=["jokes"])
+async def jokes(message: types.Message):
+    await message.reply(random.choice(joke_list), parse_mode="Markdown")
+
+
+@dp.callback_query_handler(text=["a1", "a2", "b1", "b2", "c1", "dontknow"])
+async def random_value(call: types.CallbackQuery):
+    if call.data == "a1":
+        await call.message.reply("А1(Beginner) - навыки общения развиты на базовом уровне. "
+                                 "Человек умеет использовать повседневные фразы и выражения."
+                                 "Выберете, чем хотите заняться", reply_markup=keyboard_inlinea1)
+    if call.data == "a2":
+        await call.message.answer("A2(Elementary) - это уровень английского языка, который показывает, "
+                                  "что ты только начал знакомиться с английским, но уже имеешь базовый "
+                                  "словарный запас и можешь объясняться простыми словами с другими.")
+        await call.message.answer('К сожелению, у меня нет этого уровня.')
+    if call.data == "b1":
+        await call.message.answer("B1(Pre-intermidiate) - позволяет составлять грамматически "
+                                  "верные фразы и предложения, а также выражать свои мысли на базовом уровне.")
+        await call.message.answer('К сожелению, у меня нет этого уровня.')
+    if call.data == "b2":
+        await call.message.answer("B2(Intermidiate) - это «средний» уровень знания английского языка, который "
+                                  "показывает, что ты достаточно свободно можешь объясняться на английском, "
+                                  "понимать его и говорить не только на бытовые, но и на ряд специальных тем.")
+        await call.message.answer('К сожелению, у меня нет этого уровня.')
+    if call.data == "c1":
+        await call.message.answer("C1(Upper-intermidiate) - это то знание английского, при котором можно учиться, "
+                                  "работать или жить за границей в англоговорящей стране, а также успешно сдавать "
+                                  "международные экзамены IELTS и TOEFL на достойные баллы.")
+        await call.message.answer('К сожелению, у меня нет этого уровня.')
+    if call.data == "dontknow":
+        await call.message.answer("Предлагаем пройти тест на определение своего уровня: https://school-abc.ru/test/")
+    await call.answer()
+
+
+@dp.callback_query_handler(text=["learn_a1", "practice_a1"])
+async def answer(call: types.CallbackQuery):
+    if call.data == "learn_a1":
+        await call.message.reply("Learn", reply_markup=keyboard_inlineaa1)
+    if call.data == "practice_a1":
+        await call.message.reply("Practice")
+
+
+@dp.callback_query_handler(text=["learn_wda1", "learn_atxt1"])
+async def answer(call: types.CallbackQuery):
+    if call.data == "learn_wda1":
+        await call.message.reply("Приступим к изучению слов.", reply_markup=keyboard_inlineworda1)
+    if call.data == "learn_atxt1":
+        await call.message.reply(text="<a href='http://imash.ru/netcat_files/file/BIBLIO/IN-JZ/%D0%9C%D0%B0%D1%82%D0"
+                                      "%B2%D0%B5%D0%B5%D0%B2%20%D0%A1_%D0%90_%20-%20%D0%A3%D0%BD%D0%B8%D0%B2%D0%B5%D1"
+                                      "%80%D1%81%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%83%D1%87%D0%B5%D0%B1%D0%BD"
+                                      "%D0%B8%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D0%B8%D0%B7%D1%83%D1%87%D0%B0%D1%8E%D1%89"
+                                      "%D0%B8%D1%85%20%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9%20"
+                                      "%D1%8F%D0%B7%D1%8B%D0%BA.pdf'>Предлагаем для изучения правил учебник</a>",
+                                 parse_mode=ParseMode.HTML)
+
+
+@dp.callback_query_handler(text=["color_a1", "food_a1", "animals_a1", "sport_a1"])
+async def answer(call: types.CallbackQuery):
+    if call.data == "color_a1":
+        await call.message.reply(random.choice(colors_a1_list))
+    if call.data == "food_a1":
+        await call.message.reply(random.choice(food_a1_list))
+    if call.data == "animals_a1":
+        await call.message.reply(random.choice(animals_a1_list))
+    if call.data == "sport_a1":
+        await call.message.reply(random.choice(sport_a1_list))
+
+if __name__ == "__main__":
+    executor.start_polling(dp)
